@@ -25,8 +25,9 @@ target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPT
 
 if (LUABIND_USE_EXTERNAL_LUA)
     target_link_libraries(luabind PUBLIC libluajit)
+else()
+    target_link_libraries(luabind PUBLIC Lua::Lua)
 endif()
-
 
 set_target_properties(luabind PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
