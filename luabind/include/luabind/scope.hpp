@@ -110,24 +110,27 @@ namespace luabind {
         registration_* m_registration;
     };
 
-    class LUABIND_API module_
+	namespace
+	{
+		struct lua_pop_stack
+		{
+			lua_pop_stack(lua_State* L) : m_state(L) {}
+			~lua_pop_stack() { lua_pop(m_state, 1); }
+			lua_State* m_state;
+		};
+	} // namespace
+
+	class LUABIND_API module_
     {
     public:
         module_(lua_State* L_, char const* name);
-        void operator[](scope&& s);
 
-        template<typename... Args>
-        void operator[](Args... args)
-        {
-            scope* scopes[] = { &args... };
-
-            for (size_t i = 0; i < sizeof...(Args); ++i)
-            {
-                operator[](std::move(*scopes[i]));
-            }
-        }
-
-
+		template <typename... Args> void operator[](Args&&... args)
+		{
+			push_global_table();
+			lua_pop_stack guard(m_state);
+			(std::forward<Args>(args).register_(m_state), ...);
+		}
 
         module_(const module_&) = delete;
 
@@ -153,7 +156,8 @@ namespace luabind {
     private:
         lua_State* m_state;
         char const* m_name;
-    };
+		void push_global_table();
+	};
 
     inline module_ module(lua_State* L, char const* name = 0)
     {

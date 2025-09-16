@@ -22,114 +22,51 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <luabind/config.hpp>
 #include <luabind/detail/class_rep.hpp>
 
 namespace luabind
 {
-	struct value;
-
-	struct value_vector;
+	template <typename T>
+	concept convertible_to_int = std::is_convertible_v<T, int>;
 
 	struct value
 	{
 		friend class vector_class<value>;
 
-		template<class T>
-		value(const char* name, T v)
-			: name_(name)
-			, val_(v)
-		{}
+		template <convertible_to_int T> value(const char* name, T v) : name_(name), val_(v) {}
 
-		const char* name_;
-		int val_;
+		const char* name_ = nullptr;
+		int         val_  = 0;
 
-		inline value_vector operator,(const value& rhs) const;
-
-	private: 
-
+	  private:
 		value() {}
 	};
 
-	struct value_vector : public vector_class<value>
-	{
-		// a bug in intel's compiler forces us to declare these constructors explicitly.
-		value_vector();
-		virtual ~value_vector();
-		value_vector(const value_vector& v);
-		value_vector& operator,(const value& rhs);
-	};
-
-	inline value_vector value::operator,(const value& rhs) const
-	{
-		value_vector v;
-
-		v.push_back(*this);
-		v.push_back(rhs);
-
-		return v;
-	}
-
-	inline value_vector::value_vector()
-		: vector_class<value>()
-	{
-	}
-
-	inline value_vector::~value_vector() {}
-
-	inline value_vector::value_vector(const value_vector& rhs)
-		: vector_class<value>(rhs)
-	{
-	}
-
-	inline value_vector& value_vector::operator,(const value& rhs)
-	{
-		push_back(rhs);
-		return *this;
-	}
-
 	namespace detail
 	{
-		template<typename From>
-		struct enum_maker
+
+		template <typename From> struct enum_maker
 		{
-			explicit enum_maker(From&& from): from_(std::move(from)) {}
+			explicit enum_maker(From&& from) : from_(std::forward<From>(from)) {}
 
-            enum_maker(const enum_maker&) = delete;
-            enum_maker& operator= (const enum_maker&) = delete;
+			enum_maker(const enum_maker&)            = delete;
+			enum_maker& operator=(const enum_maker&) = delete;
 
-            enum_maker(enum_maker&& that) noexcept
-                : from_(std::move(that.from_))
-            {
-            }
+			enum_maker(enum_maker&&) noexcept            = default;
+			enum_maker& operator=(enum_maker&&) noexcept = default;
 
-            enum_maker& operator= (enum_maker&& that) noexcept
-            {
-                from_ = std::move(that.from_);
-                return *this;
-            }
-
-			From operator[](const value& val) &&
+			template <typename... Args> From operator[](Args... args) &&
 			{
-				from_.add_static_constant(val.name_, val.val_);
+				(from_.add_static_constant(args.name_, args.val_), ...);
 				return std::move(from_);
 			}
 
-			From operator[](const value_vector& values) &&
-			{
-				for (value_vector::const_iterator i = values.begin(); i != values.end(); ++i)
-				{
-					from_.add_static_constant(i->name_, i->val_);
-				}
-
-				return std::move(from_);
-			}
-
-		private:
-            From from_;
+		  private:
+			From from_;
 		};
-	}
-}
+	} // namespace detail
+} // namespace luabind
