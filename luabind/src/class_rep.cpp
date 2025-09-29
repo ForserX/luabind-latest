@@ -449,7 +449,7 @@ int luabind::detail::class_rep::constructor_dispatcher(lua_State* L)
 	bool ambiguous = false;
 	int match_index = -1;
 	int min_match = std::numeric_limits<int>::max();
-	bool found;
+	[[maybe_unused]]bool found = false;
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 
@@ -613,7 +613,7 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	bool ambiguous = false;
 	int match_index = -1;
 	int min_match = std::numeric_limits<int>::max();
-	bool found;
+	[[maybe_unused]]bool found;
 
 #ifdef LUABIND_NO_ERROR_CHECKING
 	if (rep->overloads().size() == 1)
@@ -873,7 +873,7 @@ int luabind::detail::class_rep::super_callback(lua_State* L)
 		bool ambiguous = false;
 		int match_index = -1;
 		int min_match = std::numeric_limits<int>::max();
-		bool found;
+		[[maybe_unused]]bool found;
 			
 #ifdef LUABIND_NO_ERROR_CHECKING
 
@@ -1267,9 +1267,8 @@ int luabind::detail::class_rep::lua_class_settable(lua_State* L)
 	if (j == crep->m_setters.end()
 		|| std::strlen(key) != lua_strlen(L, 2))
 	{
-		map_class<const char*, class_rep::callback, ltstr>::iterator k = crep->m_getters.find(key);
-
 #ifndef LUABIND_NO_ERROR_CHECKING
+		map_class<const char*, class_rep::callback, ltstr>::iterator k = crep->m_getters.find(key);
 
 		if (k != crep->m_getters.end())
 		{
@@ -1283,7 +1282,6 @@ int luabind::detail::class_rep::lua_class_settable(lua_State* L)
 			}
 			lua_error(L);
 		}
-
 #endif
 
 		detail::lua_reference const& tbl = obj->get_lua_table();
