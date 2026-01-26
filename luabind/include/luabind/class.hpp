@@ -747,7 +747,7 @@ namespace luabind
 
 			const char* name() const;
 
-			void add_static_constant(const char* name, int val);
+			void add_static_constant(const char* name, intptr_t val);
 			void add_inner_scope(scope&& s);
 
 		private:

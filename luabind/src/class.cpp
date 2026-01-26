@@ -55,7 +55,7 @@ namespace luabind { namespace detail {
 
         // the operators in lua
         mutable vector_class<detail::class_rep::operator_callback> m_operators[detail::number_of_operators]; 
-        mutable map_class<const char*, int, detail::ltstr> m_static_constants;
+        mutable map_class<const char*, intptr_t, detail::ltstr> m_static_constants;
 
         mutable vector_class<class_base::base_desc> m_bases;
         mutable detail::construct_rep m_constructor;
@@ -367,7 +367,7 @@ namespace luabind { namespace detail {
         return m_registration->m_name; 
     }
 
-    void class_base::add_static_constant(const char* name, int val)
+    void class_base::add_static_constant(const char* name, intptr_t val)
     {
         m_registration->m_static_constants[name] = val;
     }

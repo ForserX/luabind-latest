@@ -796,10 +796,10 @@ void luabind::detail::class_rep::add_base_class(const luabind::detail::class_rep
 	}
 
 	// import all static constants
-	for (map_class<const char*, int, ltstr>::const_iterator i = bcrep->m_static_constants.begin(); 
+	for (map_class<const char*, intptr_t, ltstr>::const_iterator i = bcrep->m_static_constants.begin();
 			i != bcrep->m_static_constants.end(); ++i)
 	{
-		int& v = m_static_constants[i->first];
+		intptr_t& v = m_static_constants[i->first];
 		v = i->second;
 	}
 
@@ -1323,7 +1323,7 @@ int luabind::detail::class_rep::static_class_gettable(lua_State* L)
 		return 1;
 	}
 
-	map_class<const char*, int, ltstr>::const_iterator j = crep->m_static_constants.find(key);
+	map_class<const char*, intptr_t, ltstr>::const_iterator j = crep->m_static_constants.find(key);
 
 	if (j != crep->m_static_constants.end())
 	{

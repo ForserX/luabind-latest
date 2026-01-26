@@ -42,17 +42,17 @@ namespace luabind
 		template<class T>
 		value(const char* name, T v)
 			: name_(name)
-			, val_(static_cast<int>(v))
+			, val_(static_cast<intptr_t>(v))
 		{
 		}
 
 		const char* name_;
-		int val_;
+		intptr_t val_;
 
 		inline value_vector operator,(const value& rhs) const;
 
 	private:
-		value() {}
+		value() = default;
 	};
 
 	struct value_vector : public vector_class<value>

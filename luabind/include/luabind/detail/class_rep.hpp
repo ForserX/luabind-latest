@@ -171,7 +171,7 @@ namespace luabind { namespace detail
 
 		class_type get_class_type() const { return m_class_type; }
 
-		void add_static_constant(const char* name, int val);
+		void add_static_constant(const char* name, intptr_t val);
 		void add_method(detail::method_rep&& m);
 		void register_methods(lua_State* L);
 
@@ -308,7 +308,7 @@ namespace luabind { namespace detail
 			int(*func)(lua_State*);
 		};
 		
-		typedef map_class<const char*, int, ltstr> STATIC_CONSTANTS;
+		typedef map_class<const char*, intptr_t, ltstr> STATIC_CONSTANTS;
 
 #pragma warning(push)
 #pragma warning(disable:4251)
