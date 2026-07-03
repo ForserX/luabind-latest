@@ -951,69 +951,74 @@ namespace luabind
 			return std::move(*this);
 		}
 
-		template<typename D>
-		class_&& def_readonly(const char* name, D T::*member_ptr) &&
+		template<typename D, typename Base>
+		class_&& def_readonly(const char* name, D Base::*member_ptr) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T,D>(), _1, _2, member_ptr));
+			D T::* typed_member_ptr = member_ptr;
+			add_getter(name, std::bind(detail::auto_get<T,D>(), _1, _2, typed_member_ptr));
 			return std::move(*this);
 		}
 
-		template<typename D, typename... Policies>
-		class_&& def_readonly(const char* name, D T::*member_ptr, const detail::policy_cons<Policies...>) &&
+		template<typename D, typename Base, typename... Policies>
+		class_&& def_readonly(const char* name, D Base::*member_ptr, const detail::policy_cons<Policies...>) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D, Policies...>(), _1, _2, member_ptr));
+			D T::* typed_member_ptr = member_ptr;
+			add_getter(name, std::bind(detail::auto_get<T, D, Policies...>(), _1, _2, typed_member_ptr));
             return std::move(*this);
 		}
 
-		template<typename D>
-		class_&& def_readwrite(const char* name, D T::*member_ptr) &&
+		template<typename D, typename Base>
+		class_&& def_readwrite(const char* name, D Base::*member_ptr) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D>(), _1, _2, member_ptr));
+			D T::* typed_member_ptr = member_ptr;
+			add_getter(name, std::bind(detail::auto_get<T, D>(), _1, _2, typed_member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
 				name
-				, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
+				, std::bind(detail::auto_set<T, D>(), _1, _2, typed_member_ptr)
 				, &detail::set_matcher<D>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
+			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, typed_member_ptr));
 #endif
             return std::move(*this);
 		}
 
-		template<typename D, typename... GetPolicies>
-		class_&& def_readwrite(const char* name, D T::*member_ptr, const detail::policy_cons<GetPolicies...>) &&
+		template<typename D, typename Base, typename... GetPolicies>
+		class_&& def_readwrite(const char* name, D Base::*member_ptr, const detail::policy_cons<GetPolicies...>) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, member_ptr));
+			D T::* typed_member_ptr = member_ptr;
+			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, typed_member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
 				name
-				, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
+				, std::bind(detail::auto_set<T, D>(), _1, _2, typed_member_ptr)
 				, &detail::set_matcher<D>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
+			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, typed_member_ptr));
 #endif
             return std::move(*this);
 		}
 
-		template<typename D, typename... GetPolicies, typename... SetPolicies>
-		class_&& def_readwrite(const char* name, D T::*member_ptr, const detail::policy_cons<GetPolicies...>, const detail::policy_cons<SetPolicies...>) &&
+		template<typename D, typename Base, typename... GetPolicies, typename... SetPolicies>
+		class_&& def_readwrite(const char* name, D Base::*member_ptr, const detail::policy_cons<GetPolicies...>, const detail::policy_cons<SetPolicies...>) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, member_ptr));
+			D T::* typed_member_ptr = member_ptr;
+			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, typed_member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
 				name
-				, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr)
+				, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, typed_member_ptr)
 				, &detail::set_matcher<D, SetPolicies...>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr));
+			add_setter(name, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, typed_member_ptr));
 #endif
             return std::move(*this);
 		}
